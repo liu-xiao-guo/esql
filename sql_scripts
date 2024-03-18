@@ -1,0 +1,855 @@
+
+# https://elasticstack.blog.csdn.net/article/details/134592981
+
+PUT sample_data
+{
+  "mappings": {
+    "properties": {
+      "client.ip": {
+        "type": "ip"
+      },
+      "message": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+PUT sample_data/_bulk
+{"index": {}}
+{"@timestamp": "2023-10-23T12:15:03.360Z", "client.ip": "172.21.2.162", "message": "Connected to 10.1.0.3", "event.duration": 3450233}
+{"index": {}}
+{"@timestamp": "2023-10-23T12:27:28.948Z", "client.ip": "172.21.2.113", "message": "Connected to 10.1.0.2", "event.duration": 2764889}
+{"index": {}}
+{"@timestamp": "2023-10-23T13:33:34.937Z", "client.ip": "172.21.0.5", "message": "Disconnected", "event.duration": 1232382}
+{"index": {}}
+{"@timestamp": "2023-10-23T13:51:54.732Z", "client.ip": "172.21.3.15", "message": "Connection error", "event.duration": 725448}
+{"index": {}}
+{"@timestamp": "2023-10-23T13:52:55.015Z", "client.ip": "172.21.3.15", "message": "Connection error", "event.duration": 8268153}
+{"index": {}}
+{"@timestamp": "2023-10-23T13:53:55.832Z", "client.ip": "172.21.3.15", "message": "Connection error", "event.duration": 5033755}
+{"index": {}}
+{"@timestamp": "2023-10-23T13:55:01.543Z", "client.ip": "172.21.3.15", "message": "Connected to 10.1.0.1", "event.duration": 1756467}
+
+
+# source-command
+# | processing-command1
+# | processing-command2
+
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS COUNT(*)
+  """
+}
+
+GET sample_data/_count
+
+POST _query?format=json
+{
+  "query": """
+    FROM sample_data
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW INFO
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW INFO // Get the info
+    /* Then get rid of the warning and only select the version field */
+    | LIMIT 1
+    | KEEP version
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW INFO | LIMIT 1 | KEEP version
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW INFO | 
+    LIMIT 1 | 
+    KEEP version
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW INFO | 
+    LIMIT 1 | 
+    KEEP version |
+    RENAME version as ver
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    SHOW FUNCTIONS
+  """
+}
+
+POST /_query?format=txt
+{
+  "query": """
+  """
+}
+
+
+POST /_query?format=txt
+{
+  "query": """
+    FROM sample_data
+  """
+}
+
+POST /_query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+  """
+}
+
+GET sample_data/_search?size=5
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+  """
+}
+
+GET sample_data/_search
+{
+  "size": 5
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+    | sort @timestamp desc
+  """
+}
+
+GET sample_data/_search?size=5
+{
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | sort @timestamp desc
+    | LIMIT 5    
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | WHERE client.ip == "172.21.2.162"
+    | LIMIT 10
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | WHERE client.ip == TO_IP("172.21.2.162")
+    | LIMIT 10
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | WHERE TO_STRING(client.ip) == "172.21.2.162"
+    | LIMIT 10
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | WHERE client.ip IS NOT NULL
+    | LIMIT 10
+  """
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | sort @timestamp desc
+    | LIMIT 5
+  """
+}
+
+GET sample_data/_search
+{
+  "size": 5,
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+    | sort @timestamp desc
+    | keep @timestamp, event.duration
+  """
+}
+
+GET sample_data/_search?size=5
+{
+  "_source": ["@timestamp", "event.duration"], 
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+GET sample_data/_search?size=5
+{
+  "_source": false, 
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ],
+  "fields": [
+    "@timestamp",
+    "event.duration"
+  ]
+}
+
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+    | sort @timestamp desc
+    | WHERE event.duration > 3000000
+  """
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+    | sort @timestamp desc
+    | WHERE event.duration > 3000000
+    | WHERE message LIKE "Connection *"
+  """
+}
+
+GET sample_data/_search
+{
+  "size": 5,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "message": {
+              "value": "Connection *"
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "range": {
+            "event.duration": {
+              "gt": 3000000
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | sort @timestamp desc
+    | WHERE event.duration > 3000000
+    | WHERE message LIKE "Connection *"
+    | LIMIT 5
+  """
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+    | sort @timestamp desc
+    | WHERE event.duration > 3000000
+    | WHERE message LIKE "Connection *"
+    | DROP client.ip
+  """
+}
+
+GET sample_data/_search
+{
+  "size": 5,
+  "_source": {
+    "excludes": [
+      "client.ip"
+    ]
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "message": {
+              "value": "Connection *"
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "range": {
+            "event.duration": {
+              "gt": 3000000
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+   | WHERE CIDR_MATCH(client.ip, "172.21.3.0/32", "172.21.3.15/32")
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | WHERE message LIKE "Connected*"
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | WHERE message LIKE "Connected"
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | WHERE message LIKE "connected*"
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | WHERE message RLIKE "[cC]onnected.*"
+  """
+}
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | EVAL duration_ms = event.duration / 1000000.0
+  """
+}
+
+POST /_query?format=csv
+{
+  "query": """
+  FROM sample_data
+  | EVAL duration_ms = ROUND(event.duration / 1000000.0, 1)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    ROW a = "2023-01-23T12:15:00.000Z - some text - 127.0.0.1"
+    | DISSECT a "%{date} - %{msg} - %{ip}"
+    | KEEP date, msg, ip
+    | EVAL date = TO_DATETIME(date)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    ROW a = "2023-01-23T12:15:00.000Z 127.0.0.1 some.email@foo.com 42"
+    | GROK a "%{TIMESTAMP_ISO8601:date} %{IP:ip} %{EMAILADDRESS:email} %{NUMBER:num:int}"
+    | EVAL date = TO_DATETIME(date)
+    | KEEP date, ip, email, num
+    | EVAL old = CASE(date > DATE_PARSE("yyyy-MM-dd","2023-01-22") , true,false)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    ROW first_name = "san", last_name = "zhang", height = 1.75
+    | EVAL height_feet = height * 3.281, height_cm = height * 100
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    ROW height = 1.75, weight = 70
+    | EVAL BMI = 70/POW(height, 2)
+    | EVAL healthy = CASE( BMI < 18.5, false, BMI > 23.9, false, true)
+  """
+}
+
+POST _query/?format=csv
+{
+  "query": """
+  FROM sample_data
+    | DISSECT message "Connected to %{server.ip}"
+  """
+}
+
+
+POST /_query?format=csv
+{
+  "query": """
+    FROM sample_data
+    | WHERE STARTS_WITH(message, "Connected to")
+    | DISSECT message "Connected to %{server.ip}"
+    | STATS COUNT(*) BY server.ip
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+     ROW a = "2023-01-23T12:15:00.000Z 127.0.0.1 some.email@foo.com 42"
+    | GROK a "%{TIMESTAMP_ISO8601:date} %{IP:ip} %{EMAILADDRESS:email} %{NUMBER:num}"
+    | EVAL date = TO_DATETIME(date)
+    | KEEP date, ip, email, num
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS MIN(event.duration), MAX(event.duration)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS COUNT_DISTINCT(client.ip), AVG(event.duration)
+  """
+}
+
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS AVG(event.duration) BY client.ip
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS AVG(event.duration), COUNT(*) BY client.ip
+    | SORT COUNT(*)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS AVG(event.duration), count=COUNT(*) BY client.ip
+    | SORT count
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS AVG(event.duration), COUNT(*) BY client.ip
+    | SORT `COUNT(*)`
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS AVG(event.duration), COUNT(*) BY client.ip
+    | SORT `count(*)`
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | STATS avg = AVG(event.duration) BY client.ip
+  """
+}
+
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+     | STATS median_duration = MEDIAN(event.duration)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+     | STATS median_duration = MEDIAN(event.duration), max_duration = MAX(event.duration)
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+     | KEEP @timestamp
+     | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, event.duration
+  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  | STATS COUNT(*) BY bucket
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, event.duration
+  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  | STATS median_duration = MEDIAN(event.duration) BY bucket
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  | STATS count = COUNT(*) BY bucket, client.ip
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | EVAL bckts = AUTO_BUCKET(event.duration,20, 725448, 8268153)
+  | SORT event.duration
+  | STATS count = COUNT(*) by bckts
+"""
+}
+
+PUT clientips
+{
+  "mappings": {
+    "properties": {
+      "client.ip": {
+        "type": "keyword"
+      },
+      "env": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+PUT clientips/_bulk
+{ "index" : {}}
+{ "client.ip": "172.21.0.5", "env": "Development", "location": "loc1" }
+{ "index" : {}}
+{ "client.ip": "172.21.2.113", "env": "QA", "location": "loc2" }
+{ "index" : {}}
+{ "client.ip": "172.21.2.162", "env": "QA", "location": "loc3" }
+{ "index" : {}}
+{ "client.ip": "172.21.3.15", "env": "Production", "location":"loc4" }
+{ "index" : {}}
+{ "client.ip": "172.21.3.16", "env": "Production", "location": "loc5" }
+
+
+PUT /_enrich/policy/clientip_policy
+{
+  "match": {
+    "indices": "clientips",
+    "match_field": "client.ip",
+    "enrich_fields": ["env", "location"]
+  }
+}
+
+PUT /_enrich/policy/clientip_policy/_execute
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | KEEP @timestamp, client.ip, event.duration
+    | EVAL client.ip = TO_STRING(client.ip)
+    | ENRICH clientip_policy ON client.ip WITH env
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, client.ip, event.duration
+  | EVAL client.ip = TO_STRING(client.ip)
+  | ENRICH clientip_policy ON client.ip WITH env, location
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, client.ip, event.duration
+  | EVAL client.ip = TO_STRING(client.ip)
+  | ENRICH clientip_policy ON client.ip WITH env, location
+  | STATS count = COUNT(*) by location
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, client.ip, event.duration
+  | EVAL client.ip = TO_STRING(client.ip)
+  | ENRICH clientip_policy ON client.ip WITH env, location
+  | STATS count = COUNT(*) by env, location
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+  FROM sample_data
+  | KEEP @timestamp, client.ip, event.duration
+  | EVAL client.ip = TO_STRING(client.ip)
+  | ENRICH clientip_policy ON client.ip WITH env, location
+  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  | STATS count = COUNT(*) by bucket,env, location
+"""
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data 
+    | KEEP @timestamp, client.ip, event.duration
+    | SORT event.duration DESC
+    | LIMIT 5
+  """,
+  "filter": {
+    "range": {
+      "event.duration": {
+        "gte": 3000000,
+        "lte": 6000000
+      }
+    }
+  }
+}
+
+POST /_query?format=json
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+  """
+}
+
+POST /_query?format=json
+{
+  "query": """
+    FROM sample_data
+    | LIMIT 5
+  """,
+  "columnar": true
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data
+    | WHERE client.ip == TO_IP(?)
+    | WHERE event.duration > ? AND event.duration < ?
+    | LIMIT 5
+  """,
+  "params": ["172.21.3.15", 1000000, 6000000]
+}
+
+FROM index [METADATA _index, _id]
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data [METADATA _index, _id]
+    | LIMIT 3
+  """
+}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data [METADATA _index, _id,  _version]
+    | LIMIT 3
+    | WHERE _version == 1
+    | EVAL key = CONCAT(_index, "_", _id)
+    | KEEP _index, _version, _id, key
+  """
+}
+
+PUT sample_data/_bulk
+{"index":{}}
+{"@timestamp":"2023-10-23T11:15:03.360Z","client.ip":"172.21.2.162","message":"Connected to 10.1.0.5","event.duration":3333333}
+
+POST _query?format=txt
+{
+  "query": """
+    FROM sample_data* [METADATA _index, _id]
+    | STATS max= MAX(event.duration) BY _index
+  """
+}
+
+POST /mv/_bulk?refresh
+{"index":{}}
+{"a":1,"b":[2,1]}
+{"index":{}}
+{"a":2,"b":3}
+
+POST /_query?format=txt
+{
+  "query": "FROM mv | LIMIT 2"
+}
+
+POST /_query?format=txt
+{
+  "query": "FROM mv | EVAL b=MV_MIN(b) | EVAL b + 2, a + b | LIMIT 4"
+}
+
+# Discover
+
+  FROM sample_data
+  | KEEP @timestamp, client.ip, event.duration
+  | EVAL client.ip = TO_STRING(client.ip)
+  | ENRICH clientip_policy ON client.ip WITH env, location
+  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+  | STATS count = COUNT(*) by bucket,env, locations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
