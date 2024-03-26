@@ -817,12 +817,12 @@ POST /_query?format=txt
 
 # Discover
 
-  FROM sample_data
-  | KEEP @timestamp, client.ip, event.duration
-  | EVAL client.ip = TO_STRING(client.ip)
-  | ENRICH clientip_policy ON client.ip WITH env, location
-  | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
-  | STATS count = COUNT(*) by bucket,env, locations
+FROM sample_data
+| KEEP @timestamp, client.ip, event.duration
+| EVAL client.ip = TO_STRING(client.ip)
+| ENRICH clientip_policy ON client.ip WITH env, location
+| EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
+| STATS count = COUNT(*) by bucket,env, locations
 
 
 
