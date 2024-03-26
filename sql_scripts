@@ -746,6 +746,7 @@ POST /_query?format=json
   """
 }
 
+# default is in JSON
 POST /_query?format=json
 {
   "query": """
