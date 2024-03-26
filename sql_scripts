@@ -161,6 +161,7 @@ GET sample_data/_search?size=5
   ]
 }
 
+# The following result is different from the above
 POST /_query?format=csv
 {
   "query": """
@@ -636,6 +637,9 @@ PUT clientips
         "type": "keyword"
       },
       "env": {
+        "type": "keyword"
+      },
+      "location": {
         "type": "keyword"
       }
     }
