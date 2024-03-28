@@ -36,7 +36,14 @@ PUT sample_data/_bulk
 # | processing-command1
 # | processing-command2
 
+# This is the basic command format
+POST /_query?format=txt
+{
+  "query": """
+  """
+}
 
+# Get the number of documents
 POST _query?format=txt
 {
   "query": """
@@ -47,6 +54,7 @@ POST _query?format=txt
 
 GET sample_data/_count
 
+# Get results in JSON format
 POST _query?format=json
 {
   "query": """
@@ -54,6 +62,7 @@ POST _query?format=json
   """
 }
 
+# Get results in TXT format
 POST _query?format=txt
 {
   "query": """
@@ -61,16 +70,18 @@ POST _query?format=txt
   """
 }
 
+# Comments in different forms
 POST _query?format=txt
 {
   "query": """
     SHOW INFO // Get the info
-    /* Then get rid of the warning and only select the version field */
+     /* Then get rid of the warning and only select the version field */
     | LIMIT 1
     | KEEP version
   """
 }
 
+# Commands can be on the same line
 POST _query?format=txt
 {
   "query": """
@@ -78,15 +89,17 @@ POST _query?format=txt
   """
 }
 
+# It can be in different format and case insentive
 POST _query?format=txt
 {
   "query": """
     SHOW INFO | 
-    LIMIT 1 | 
+    LiMIT 1 | 
     KEEP version
   """
 }
 
+# It can rename to different name
 POST _query?format=txt
 {
   "query": """
@@ -97,6 +110,7 @@ POST _query?format=txt
   """
 }
 
+# Shwo all of the functions
 POST _query?format=txt
 {
   "query": """
@@ -104,13 +118,8 @@ POST _query?format=txt
   """
 }
 
-POST /_query?format=txt
-{
-  "query": """
-  """
-}
 
-
+#
 POST /_query?format=txt
 {
   "query": """
@@ -171,6 +180,7 @@ POST /_query?format=csv
   """
 }
 
+# What will happen to the following command?
 POST _query?format=txt
 {
   "query": """
@@ -180,6 +190,7 @@ POST _query?format=txt
   """
 }
 
+# Data has type definition
 POST _query?format=txt
 {
   "query": """
@@ -189,6 +200,7 @@ POST _query?format=txt
   """
 }
 
+# Convert on either of the side
 POST _query?format=txt
 {
   "query": """
@@ -198,6 +210,7 @@ POST _query?format=txt
   """
 }
 
+# Condition check
 POST _query?format=txt
 {
   "query": """
@@ -207,6 +220,7 @@ POST _query?format=txt
   """
 }
 
+# We can sort the data
 POST /_query?format=csv
 {
   "query": """
@@ -216,6 +230,7 @@ POST /_query?format=csv
   """
 }
 
+# Equivalent in DSL
 GET sample_data/_search
 {
   "size": 5,
@@ -228,6 +243,7 @@ GET sample_data/_search
   ]
 }
 
+# We can keep the needed fields
 POST /_query?format=csv
 {
   "query": """
@@ -238,6 +254,7 @@ POST /_query?format=csv
   """
 }
 
+# The equivalent query in DSL
 GET sample_data/_search?size=5
 {
   "_source": ["@timestamp", "event.duration"], 
@@ -250,6 +267,7 @@ GET sample_data/_search?size=5
   ]
 }
 
+# Or in this form in DSL
 GET sample_data/_search?size=5
 {
   "_source": false, 
@@ -266,7 +284,7 @@ GET sample_data/_search?size=5
   ]
 }
 
-
+# Query according a condition
 POST /_query?format=csv
 {
   "query": """
@@ -277,6 +295,7 @@ POST /_query?format=csv
   """
 }
 
+# It may contain multiple WHERE
 POST /_query?format=csv
 {
   "query": """
@@ -288,6 +307,7 @@ POST /_query?format=csv
   """
 }
 
+# Equivalent in DSL
 GET sample_data/_search
 {
   "size": 5,
@@ -315,7 +335,7 @@ GET sample_data/_search
   }
 }
 
-
+# This is exactly the same as the above DSL
 POST /_query?format=csv
 {
   "query": """
@@ -327,6 +347,7 @@ POST /_query?format=csv
   """
 }
 
+# Drop a field
 POST /_query?format=csv
 {
   "query": """
@@ -339,6 +360,7 @@ POST /_query?format=csv
   """
 }
 
+# The equivalent query in DSL
 GET sample_data/_search
 {
   "size": 5,
@@ -371,7 +393,7 @@ GET sample_data/_search
   }
 }
 
-
+# Query certain IP range
 POST _query?format=txt
 {
   "query": """
@@ -380,6 +402,7 @@ POST _query?format=txt
   """
 }
 
+# wildcard search
 POST _query?format=txt
 {
   "query": """
@@ -388,6 +411,7 @@ POST _query?format=txt
 """
 }
 
+# So far, text is treated as keyword
 POST _query?format=txt
 {
   "query": """
@@ -396,6 +420,7 @@ POST _query?format=txt
 """
 }
 
+# The following will not get anything
 POST _query?format=txt
 {
   "query": """
@@ -404,6 +429,7 @@ POST _query?format=txt
 """
 }
 
+# Regular expression search
 POST _query?format=txt
 {
   "query": """
@@ -412,6 +438,7 @@ POST _query?format=txt
   """
 }
 
+# Calculate a new value. This is equivalent a run time field
 POST /_query?format=csv
 {
   "query": """
@@ -420,6 +447,7 @@ POST /_query?format=csv
   """
 }
 
+# We can use some of the functions
 POST /_query?format=csv
 {
   "query": """
@@ -428,6 +456,7 @@ POST /_query?format=csv
   """
 }
 
+# Use DISSECT to structure texts
 POST _query?format=txt
 {
   "query": """
@@ -438,6 +467,7 @@ POST _query?format=txt
   """
 }
 
+# Use GROK to structure texts and calculate new fields
 POST _query?format=txt
 {
   "query": """
@@ -449,6 +479,7 @@ POST _query?format=txt
   """
 }
 
+# Calculate new values
 POST _query?format=txt
 {
   "query": """
@@ -457,6 +488,7 @@ POST _query?format=txt
   """
 }
 
+# Calculate new fields according to condition
 POST _query?format=txt
 {
   "query": """
@@ -466,6 +498,7 @@ POST _query?format=txt
   """
 }
 
+# Extract new fields
 POST _query/?format=csv
 {
   "query": """
@@ -474,7 +507,7 @@ POST _query/?format=csv
   """
 }
 
-
+# Aggregate data. Notice the field name
 POST /_query?format=csv
 {
   "query": """
@@ -485,6 +518,7 @@ POST /_query?format=csv
   """
 }
 
+# Use GROK to calculate new field
 POST _query?format=txt
 {
   "query": """
@@ -495,6 +529,7 @@ POST _query?format=txt
   """
 }
 
+# Get MIN and MAX values on the same command
 POST _query?format=txt
 {
   "query": """
@@ -503,6 +538,7 @@ POST _query?format=txt
   """
 }
 
+# Get the distinct values and AVG
 POST _query?format=txt
 {
   "query": """
@@ -511,7 +547,7 @@ POST _query?format=txt
   """
 }
 
-
+# Aggregate data
 POST _query?format=txt
 {
   "query": """
@@ -520,6 +556,7 @@ POST _query?format=txt
   """
 }
 
+# What will happen to this query?
 POST _query?format=txt
 {
   "query": """
@@ -529,6 +566,7 @@ POST _query?format=txt
   """
 }
 
+# This is one way to workaround
 POST _query?format=txt
 {
   "query": """
@@ -538,6 +576,7 @@ POST _query?format=txt
   """
 }
 
+# This is another way to workaround
 POST _query?format=txt
 {
   "query": """
@@ -547,6 +586,7 @@ POST _query?format=txt
   """
 }
 
+# Case sensitive
 POST _query?format=txt
 {
   "query": """
@@ -556,6 +596,7 @@ POST _query?format=txt
   """
 }
 
+# Aggregate data
 POST _query?format=txt
 {
   "query": """
@@ -564,7 +605,7 @@ POST _query?format=txt
   """
 }
 
-
+# Get the median data
 POST _query?format=txt
 {
   "query": """
@@ -573,6 +614,7 @@ POST _query?format=txt
   """
 }
 
+# More aggs on the same command
 POST _query?format=txt
 {
   "query": """
@@ -581,6 +623,7 @@ POST _query?format=txt
   """
 }
 
+# Calculate buckets
 POST _query?format=txt
 {
   "query": """
@@ -590,6 +633,7 @@ POST _query?format=txt
   """
 }
 
+# date histogram
 POST _query?format=txt
 {
   "query": """
@@ -600,6 +644,7 @@ POST _query?format=txt
   """
 }
 
+# date histogram
 POST _query?format=txt
 {
   "query": """
@@ -610,6 +655,7 @@ POST _query?format=txt
 """
 }
 
+# two levels aggregations
 POST _query?format=txt
 {
   "query": """
@@ -619,6 +665,7 @@ POST _query?format=txt
   """
 }
 
+# Get the count by integer buckets
 POST _query?format=txt
 {
   "query": """
@@ -628,6 +675,8 @@ POST _query?format=txt
   | STATS count = COUNT(*) by bckts
 """
 }
+
+DELETE clientips
 
 PUT clientips
 {
@@ -646,6 +695,8 @@ PUT clientips
   }
 }
 
+GET clientips/_mapping
+
 PUT clientips/_bulk
 { "index" : {}}
 { "client.ip": "172.21.0.5", "env": "Development", "location": "loc1" }
@@ -658,6 +709,8 @@ PUT clientips/_bulk
 { "index" : {}}
 { "client.ip": "172.21.3.16", "env": "Production", "location": "loc5" }
 
+
+DELETE /_enrich/policy/clientip_policy
 
 PUT /_enrich/policy/clientip_policy
 {
@@ -750,7 +803,6 @@ POST /_query?format=json
   """
 }
 
-# default is in JSON
 POST /_query?format=json
 {
   "query": """
@@ -771,7 +823,7 @@ POST _query?format=txt
   "params": ["172.21.3.15", 1000000, 6000000]
 }
 
-FROM index [METADATA _index, _id]
+# FROM index [METADATA _index, _id]
 
 POST _query?format=txt
 {
@@ -828,33 +880,3 @@ FROM sample_data
 | ENRICH clientip_policy ON client.ip WITH env, location
 | EVAL bucket = AUTO_BUCKET (@timestamp, 24, "2023-10-23T00:00:00Z", "2023-10-23T23:59:59Z")
 | STATS count = COUNT(*) by bucket,env, location
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
